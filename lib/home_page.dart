@@ -234,11 +234,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      if (meta != null) ...[
-                        const SizedBox(height: 36),
-                        MetaView(meta: meta),
-                        const SizedBox(height: 48),
-                      ]
+                      const SizedBox(height: 36),
+                      AnimatedOpacity(
+                        opacity: meta == null ? 0 : 1,
+                        duration: const Duration(milliseconds: 500),
+                        child: MetaView(meta: meta),
+                      ),
+                      const SizedBox(height: 48),
                     ],
                   ),
                 ),
@@ -273,68 +275,72 @@ class MetaView extends StatelessWidget {
           horizontal: 32,
           vertical: 24,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (meta!.image != null) ...[
-              Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 250,
-                ),
-                child: Image.network(meta!.image!),
-              ),
-              const Divider(color: Colors.transparent),
-            ],
-            if (meta!.title != null) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: meta == null
+            ? const SizedBox()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (meta!.favicon != null) ...[
-                    Image.network(
-                      meta!.favicon!,
-                      height: 32,
-                      fit: BoxFit.contain,
+                  if (meta!.image != null) ...[
+                    Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: 250,
+                      ),
+                      child: Image.network(meta!.image!),
                     ),
-                    const SizedBox(width: 4),
+                    const Divider(color: Colors.transparent),
                   ],
-                  Text(
-                    meta!.title!,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.comfortaa(
-                      fontWeight: FontWeight.w700,
-                      color: textColor,
-                      fontSize: 22,
+                  if (meta!.title != null) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (meta!.favicon != null) ...[
+                          Image.network(
+                            meta!.favicon!,
+                            height: 32,
+                            fit: BoxFit.contain,
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                        Expanded(
+                          child: Text(
+                            meta!.title!,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.comfortaa(
+                              fontWeight: FontWeight.w700,
+                              color: textColor,
+                              fontSize: 22,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                    const Divider(color: Colors.transparent),
+                  ],
+                  if (meta!.description != null) ...[
+                    Text(
+                      meta!.description!,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blueGrey,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const Divider(color: Colors.transparent),
+                  ],
+                  if (meta!.url != null)
+                    GradientBtn(
+                      label: "Know More",
+                      icon: const Icon(Icons.read_more_rounded),
+                      textSize: 16,
+                      height: 48,
+                      tooltipMsg: meta!.url!,
+                      onPressed: () async {
+                        await launchUrl(Uri.parse(meta!.url!));
+                      },
+                    ),
                 ],
               ),
-              const Divider(color: Colors.transparent),
-            ],
-            if (meta!.description != null) ...[
-              Text(
-                meta!.description!,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.comfortaa(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blueGrey,
-                  fontSize: 20,
-                ),
-              ),
-              const Divider(color: Colors.transparent),
-            ],
-            if (meta!.url != null)
-              GradientBtn(
-                label: "Know More",
-                icon: const Icon(Icons.read_more_rounded),
-                textSize: 16,
-                height: 48,
-                tooltipMsg: meta!.url!,
-                onPressed: () async {
-                  await launchUrl(Uri.parse(meta!.url!));
-                },
-              ),
-          ],
-        ),
       ),
     );
   }
